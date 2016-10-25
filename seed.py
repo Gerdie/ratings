@@ -19,17 +19,18 @@ def load_users():
     # we won't be trying to add duplicate users
     User.query.delete()
 
-    # Read u.user file and insert data
-    for row in open("seed_data/u.user"):
-        row = row.rstrip()
-        user_id, age, gender, occupation, zipcode = row.split("|")
+    # Read u.user file and insert data ******** close file ????
+    with open("seed_data/u.user") as user_file:
+        for row in user_file:
+            row = row.rstrip()
+            user_id, age, gender, occupation, zipcode = row.split("|")
 
-        user = User(user_id=user_id,
-                    age=age,
-                    zipcode=zipcode)
+            user = User(user_id=user_id,
+                        age=age,
+                        zipcode=zipcode)
 
-        # We need to add to the session or it won't ever be stored
-        db.session.add(user)
+            # We need to add to the session or it won't ever be stored
+            db.session.add(user)
 
     # Once we're done, we should commit our work
     db.session.commit()
@@ -42,23 +43,24 @@ def load_movies():
 
     Movie.query.delete()
 
-    for row in open("seed_data/u.item"):
-        row = row.rstrip().split("|")
-        movie_id, title, released_at, misc, imdb_url = row[0:5]
-        movie_id = int(movie_id)
-        title = title[:-7]
-        if released_at:
-            released_at = datetime.datetime.strptime(released_at, "%d-%b-%Y")
-            movie = Movie(movie_id=movie_id,
-                      title=title,
-                      released_at=released_at,
-                      imdb_url=imdb_url)
-        else:
-            movie = Movie(movie_id=movie_id,
-                      title=title,
-                      imdb_url=imdb_url)
+    with open("seed_data/u.item") as movie_file:
+        for row in movie_file:
+            row = row.rstrip().split("|")
+            movie_id, title, released_at, misc, imdb_url = row[0:5]
+            movie_id = int(movie_id)
+            title = title[:-7]
+            if released_at:
+                released_at = datetime.datetime.strptime(released_at, "%d-%b-%Y")
+                movie = Movie(movie_id=movie_id,
+                          title=title,
+                          released_at=released_at,
+                          imdb_url=imdb_url)
+            else:
+                movie = Movie(movie_id=movie_id,
+                          title=title,
+                          imdb_url=imdb_url)
 
-        db.session.add(movie)
+            db.session.add(movie)
 
     db.session.commit()
 
@@ -69,17 +71,22 @@ def load_ratings():
 
     Rating.query.delete()
 
-    for row in open("seed_data/u.data"):
-        row = row.rstrip().split()
-        user_id = int(row[0])
-        movie_id = int(row[1])
-        score = int(row[2])
+    with open("seed_data/u.data") as rating_file: 
+        i = 0
+        for row in rating_file:
+            i += 1
+            row = row.rstrip().split()
+            user_id = int(row[0])
+            movie_id = int(row[1])
+            score = int(row[2])
 
-        rating = Rating(user_id=user_id,
-                        movie_id=movie_id,
-                        score=score)
+            rating = Rating(user_id=user_id,
+                            movie_id=movie_id,
+                            score=score)
 
-        db.session.add(rating)
+            db.session.add(rating)
+            if i%1000==0:
+                db.session.commit()
 
     db.session.commit()
 

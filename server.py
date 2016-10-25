@@ -2,10 +2,11 @@
 
 from jinja2 import StrictUndefined
 
-from flask import Flask, jsonify
+from flask import (Flask, jsonify, render_template, redirect, request, flash,
+                   session)
 from flask_debugtoolbar import DebugToolbarExtension
 
-from model import connect_to_db, db
+from model import connect_to_db, db, User, Movie, Rating
 
 
 app = Flask(__name__)
@@ -22,8 +23,8 @@ app.jinja_env.undefined = StrictUndefined
 @app.route('/')
 def index():
     """Homepage."""
-    a = jsonify([1,3])
-    return a
+    
+    return render_template("homepage.html")
 
 
 if __name__ == "__main__":
