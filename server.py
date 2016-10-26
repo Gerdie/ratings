@@ -33,6 +33,16 @@ def user_list():
     users = User.query.all()
     return render_template("user_list.html", users=users)
 
+@app.route("/users/<user_id>")
+def show_user_page(user_id):
+    """Show individual user's info"""
+
+    user = User.query.get(user_id)
+    ratings_list = db.session.query(Rating.score, Movie.title).join(Movie).filter(Rating.user_id==user_id).all()
+
+    return render_template("user_page.html", user=user, ratings_list=ratings_list)
+
+
 @app.route("/login")
 def show_login():
     """Shows the log-in form"""
@@ -40,7 +50,7 @@ def show_login():
 
     return render_template("login_form.html")
 
-@app.route("/process-login", methods=["POST"])
+@app.route("/login", methods=["POST"])
 def login_process():
     """Processes the login information"""
 
@@ -78,7 +88,7 @@ def show_registration():
 
     return render_template("register_form.html")
 
-@app.route("/process-registration", methods=["POST"])
+@app.route("/register", methods=["POST"])
 def registration_process():
     """Processes the registration information"""
 
