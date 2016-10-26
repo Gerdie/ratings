@@ -26,6 +26,81 @@ def index():
     
     return render_template("homepage.html")
 
+@app.route("/users")
+def user_list():
+    """Show list of users."""
+
+    users = User.query.all()
+    return render_template("user_list.html", users=users)
+
+@app.route("/login")
+def show_login():
+    """Shows the log-in form"""
+
+
+    return render_template("login_form.html")
+
+@app.route("/process-login", methods=["POST"])
+def login_process():
+    """Processes the login information"""
+
+    email = request.form.get("email")
+    password = request.form.get("password")
+
+    user = User.query.filter_by(email=email).first()
+
+    if not user:
+        flash("Email does not exist. Please try again or register.")
+        return redirect("/login")
+    elif user and (user.password == password):
+        flash("Login Successful.")
+        session['user_id'] = user.user_id
+        return redirect("/")
+    else:
+        flash("Password incorrect. Please try again.")
+        return redirect("/login")
+
+@app.route("/logout")
+def show_logout():
+    """Shows the logout option"""
+
+    flash("Logged out. Thanks for visiting Ratings!")
+    del session['user_id']
+
+    return redirect("/")
+
+        
+
+@app.route("/register")
+def show_registration():
+    """Shows the registration form"""
+
+
+    return render_template("register_form.html")
+
+@app.route("/process-registration", methods=["POST"])
+def registration_process():
+    """Processes the registration information"""
+
+    email = request.form.get("email")
+    password = request.form.get("password")
+    age = request.form.get("age")
+    zipcode = request.form.get("zipcode")
+
+    user = User.query.filter_by(email=email).first()
+
+    if user:
+        flash("You're already in our system. Please login.")
+        return redirect("/login")
+    else:
+        #send info to update User database
+        user = User(email=email, password=password, age=int(age), zipcode=zipcode)
+        db.session.add(user)
+        db.session.commit()
+        #redirect to home
+        flash("Registration Successful. Welcome to Ratings!")
+        return redirect("/")
+
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the
@@ -39,4 +114,4 @@ if __name__ == "__main__":
 
 
     
-    app.run(port=5003)
+    app.run()
