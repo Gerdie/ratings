@@ -65,7 +65,7 @@ def login_process():
     elif user and (user.password == password):
         flash("Login Successful.")
         session['user_id'] = user.user_id
-        return redirect("/")
+        return redirect("/users/" + str(user.user_id))
     else:
         flash("Password incorrect. Please try again.")
         return redirect("/login")
@@ -95,6 +95,10 @@ def registration_process():
     email = request.form.get("email")
     password = request.form.get("password")
     age = request.form.get("age")
+    if age:
+        age = int(age)
+    else:
+        age=None
     zipcode = request.form.get("zipcode")
 
     user = User.query.filter_by(email=email).first()
@@ -104,9 +108,10 @@ def registration_process():
         return redirect("/login")
     else:
         #send info to update User database
-        user = User(email=email, password=password, age=int(age), zipcode=zipcode)
+        user = User(email=email, password=password, age=age, zipcode=zipcode)
         db.session.add(user)
         db.session.commit()
+        session['user_id'] = user.user_id
         #redirect to home
         flash("Registration Successful. Welcome to Ratings!")
         return redirect("/")
