@@ -38,9 +38,25 @@ def show_user_page(user_id):
     """Show individual user's info"""
 
     user = User.query.get(user_id)
-    ratings_list = db.session.query(Rating.score, Movie.title).join(Movie).filter(Rating.user_id==user_id).all()
+    ratings_list = db.session.query(Rating.score, Movie.title, Movie.imdb_url).join(Movie).filter(Rating.user_id==user_id).all()
 
     return render_template("user_page.html", user=user, ratings_list=ratings_list)
+
+
+@app.route("/movies")
+def movie_list():
+    """Show list of movies."""
+
+    movies = Movie.query.order_by('title').all()
+    return render_template("movie_list.html", movies=movies)
+
+
+@app.route("/movies/<movie_id>")
+def show_movie_page(movie_id):
+    """Show individual movie's info"""
+
+    movie = Movie.query.get(movie_id)
+    return render_template("movie_page.html", movie=movie)
 
 
 @app.route("/login")

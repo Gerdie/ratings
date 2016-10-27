@@ -14,7 +14,7 @@
     <h2>Ratings</h2>
         <ul>
             {% for rating in ratings_list %}
-            <li>{{ rating[1] }}: {{ rating[0] }}</li>
+            <li><a href="{{ rating[2] }}">{{ rating[1] }}</a>: {{ rating[0] }}</li>
             {% endfor %}
         </ul>
     {% endif %}
