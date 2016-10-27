@@ -59,6 +59,28 @@ def show_movie_page(movie_id):
     return render_template("movie_page.html", movie=movie)
 
 
+@app.route("/movies/<movie_id>", methods=["POST"])
+def rate_movie_page(movie_id):
+    """Show individual movie's info"""
+
+    new_score = request.form.get("movie-rating")
+    movie = Movie.query.get(movie_id)
+    user_id=session["user_id"]
+
+    rating = Rating.query.filter((Rating.user_id==user_id) & (Rating.movie_id==movie_id)).first()
+
+    if not rating:
+        rating = Rating(score=new_score, user_id=user_id, movie_id=movie_id)
+
+    else:
+        rating.score = new_score
+
+    db.session.add(rating)
+    db.session.commit()
+
+    return render_template("movie_page.html", movie=movie)
+
+
 @app.route("/login")
 def show_login():
     """Shows the log-in form"""

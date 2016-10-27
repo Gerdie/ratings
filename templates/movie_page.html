@@ -3,14 +3,19 @@
 
 <h1>Movie: {{movie.title}}</h1>
     {% if movie.released_at %}
-    <p>Release Date: {{movie.released_at}}</p>
+        <p>Release Date: {{movie.released_at}}</p>
     {% endif %}
     {% if movie.imdb_url %}
-    <a href="{{ movie.imdb_url}}">IMDB Page</a>
+        <a href="{{ movie.imdb_url}}">IMDB Page</a>
     {% endif %}
     {% if "user_id" in session %}
+        {% for rating in movie.ratings %}
+            {% if session["user_id"] == rating.user_id %}
+                <h2>Your rating is: {{ rating.score }} </h2>
+            {% endif %}
+        {% endfor %}
     <form action="/movies/{{ movie.movie_id }}" method="POST">
-        <label id="movie-rating">Rate this movie</label>
+        <label id="movie-rating">Rate this movie: </label>
         <input name="movie-rating" type="number">
         <input type="submit" value="Rate">
     </form>
