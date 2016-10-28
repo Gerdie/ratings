@@ -56,7 +56,35 @@ def show_movie_page(movie_id):
     """Show individual movie's info"""
 
     movie = Movie.query.get(movie_id)
-    return render_template("movie_page.html", movie=movie)
+    user_id = session.get("user_id")
+    if user_id:
+        user_rating = Rating.query.filter_by(
+            movie_id=movie_id, user_id=user_id).first()
+
+    else:
+        user_rating = None
+
+    # Get average rating of movie
+
+    rating_scores = [r.score for r in movie.ratings]
+    avg_rating = float(sum(rating_scores)) / len(rating_scores)
+
+    prediction = None
+
+    # Prediction code: only predict if the user hasn't rated it.
+
+    if (not user_rating) and user_id:
+        user = User.query.get(user_id)
+        if user:
+            prediction = user.predict_rating(movie)
+
+    return render_template(
+        "movie_page.html",
+        movie=movie,
+        user_rating=user_rating,
+        average=avg_rating,
+        prediction=prediction
+        )
 
 
 @app.route("/movies/<movie_id>", methods=["POST"])
@@ -78,7 +106,7 @@ def rate_movie_page(movie_id):
     db.session.add(rating)
     db.session.commit()
 
-    return render_template("movie_page.html", movie=movie)
+    return redirect("/movies/%s" % movie_id)
 
 
 @app.route("/login")

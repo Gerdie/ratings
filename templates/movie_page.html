@@ -9,6 +9,10 @@
         <a href="{{ movie.imdb_url}}">IMDB Page</a>
     {% endif %}
     {% if "user_id" in session %}
+        <p>Average rating: {{ average }}</p>
+        {% if prediction %}
+            <p>We predict you will rate this movie {{ prediction }}.</p>
+        {% endif %}
         {% for rating in movie.ratings %}
             {% if session["user_id"] == rating.user_id %}
                 <h2>Your rating is: {{ rating.score }} </h2>
@@ -22,8 +26,9 @@
     {% endif %}
 
     {% if movie.ratings %}
+        <h2>Ratings</h2>
         {% for rating in movie.ratings %}
-        <li>{{ rating.score }}</li>
+        <li>User {{ rating.user_id}} gave this movie a rating of {{ rating.score }}</li>
         {% endfor %}
     {% endif %}
 

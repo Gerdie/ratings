@@ -4,6 +4,8 @@
   <title>Ratings</title>
 </head>
 
+<a href="/">Home</a>
+
 {% if "user_id" in session %}
     <a href="/logout">Log Out</a>
 {% else %}
@@ -11,7 +13,7 @@
 {% endif %}
 
 <body>
-  Ratings
+  
   <hr>
   {% with messages = get_flashed_messages() %}
     {% if messages %}
